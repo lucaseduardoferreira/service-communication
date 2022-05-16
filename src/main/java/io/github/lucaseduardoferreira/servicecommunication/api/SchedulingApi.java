@@ -6,18 +6,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.UUID;
+import java.util.List;
 
 public interface SchedulingApi {
 
     @PostMapping
-    ResponseEntity<SchedulingResponse> create(SchedulingRequest request);
+    ResponseEntity<SchedulingResponse> create(@RequestBody SchedulingRequest request);
 
     @GetMapping
-    ResponseEntity<SchedulingResponse> getAll(SchedulingRequest request);
+    ResponseEntity<List<SchedulingResponse>> getAll();
 
     @GetMapping("/{id}")
-    ResponseEntity<SchedulingResponse> getById(@PathVariable UUID id);
+    ResponseEntity<SchedulingResponse> getById(@PathVariable Long id);
+
+    @PutMapping("/{id}")
+    ResponseEntity<SchedulingResponse> update(@PathVariable Long id, @RequestBody SchedulingRequest request);
 
 }

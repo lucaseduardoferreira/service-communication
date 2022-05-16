@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Scope("singleton")
@@ -27,13 +28,36 @@ public class SchedulingServiceImpl implements SchedulingService {
 
     @Override
     public Scheduling save(Scheduling scheduling) {
-        messageRepository.save(scheduling.getMessage());
-        recipientRepository.save(scheduling.getRecipient());
+        scheduling.setSent(Boolean.FALSE);
+        scheduling.setCreatedAt(LocalDateTime.now());
         return schedulingRepository.save(scheduling);
     }
 
     @Override
-    public Optional<Scheduling> getById(UUID id) {
+    public Optional<Scheduling> getById(Long id) {
         return schedulingRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Scheduling> update(Long id, Scheduling scheduling) {
+        var schedulingFounded = schedulingRepository.findById(id);
+        if (schedulingFounded.isPresent()) {
+            var message = scheduling.getMessage();
+
+            var recipient = scheduling.getRecipient();
+
+            schedulingFounded.get().setUpdatedAt(LocalDateTime.now());
+            schedulingFounded.get().setSent(scheduling.getSent());
+            schedulingFounded.get().setCommunication(scheduling.getCommunication());
+            schedulingFounded.get().setMessage(message);
+            schedulingFounded.get().setRecipient(recipient);
+            return Optional.of(schedulingRepository.save(schedulingFounded.get()));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Scheduling> getAll() {
+        return schedulingRepository.findAll();
     }
 }

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SchedulingResponse {
+    private Long id;
     private Message message;
     private Recipient recipient;
     private LocalDateTime shippingDate;

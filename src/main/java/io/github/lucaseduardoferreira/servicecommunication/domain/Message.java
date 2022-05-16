@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.UUID;
+import java.io.Serializable;
 
 @Builder
 @Data
@@ -19,12 +19,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Message {
+public class Message implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, unique = true, nullable = false)
-    private UUID id;
+    private Long id;
 
     private String title;
     private String body;

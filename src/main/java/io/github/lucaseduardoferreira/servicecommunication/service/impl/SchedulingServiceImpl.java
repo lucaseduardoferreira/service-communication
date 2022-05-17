@@ -7,10 +7,11 @@ import io.github.lucaseduardoferreira.servicecommunication.repository.Scheduling
 import io.github.lucaseduardoferreira.servicecommunication.service.SchedulingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,6 +29,12 @@ public class SchedulingServiceImpl implements SchedulingService {
 
     @Override
     public Scheduling save(Scheduling scheduling) {
+        var message = scheduling.getMessage();
+        scheduling.setMessage(messageRepository.save(message));
+
+        var recipient = scheduling.getRecipient();
+        scheduling.setRecipient(recipientRepository.save(recipient));
+
         scheduling.setSent(Boolean.FALSE);
         scheduling.setCreatedAt(LocalDateTime.now());
         return schedulingRepository.save(scheduling);
@@ -43,7 +50,6 @@ public class SchedulingServiceImpl implements SchedulingService {
         var schedulingFounded = schedulingRepository.findById(id);
         if (schedulingFounded.isPresent()) {
             var message = scheduling.getMessage();
-
             var recipient = scheduling.getRecipient();
 
             schedulingFounded.get().setUpdatedAt(LocalDateTime.now());
@@ -57,7 +63,13 @@ public class SchedulingServiceImpl implements SchedulingService {
     }
 
     @Override
-    public List<Scheduling> getAll() {
-        return schedulingRepository.findAll();
+    public Page<Scheduling> getAll(Pageable pageable) {
+        return schedulingRepository.findAll(pageable);
+    }
+
+    @Override
+    public void delete(Long id) {
+        var schedulingFounded = schedulingRepository.findById(id);
+        schedulingFounded.ifPresent(schedulingRepository::delete);
     }
 }

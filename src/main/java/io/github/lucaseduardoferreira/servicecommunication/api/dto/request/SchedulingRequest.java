@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Builder
@@ -15,9 +16,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class SchedulingRequest {
 
+    @NotNull
     private Message message;
+
+    @NotNull
     private Recipient recipient;
+
+    @NotNull
     private LocalDateTime shippingDate;
 
+    @NotNull
     private String communication;
 }

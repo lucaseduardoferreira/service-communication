@@ -6,12 +6,14 @@ import io.github.lucaseduardoferreira.servicecommunication.api.dto.request.Sched
 import io.github.lucaseduardoferreira.servicecommunication.api.dto.response.SchedulingResponse;
 import io.github.lucaseduardoferreira.servicecommunication.service.SchedulingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/scheduling")
@@ -23,12 +25,12 @@ public class SchedulingController implements SchedulingApi {
 
     @Override
     public ResponseEntity<SchedulingResponse> create(SchedulingRequest request) {
-        return ResponseEntity.ok(mapper.fromResponse(service.save(mapper.fromRequest(request))));
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.fromResponse(service.save(mapper.fromRequest(request))));
     }
 
     @Override
-    public ResponseEntity<List<SchedulingResponse>>getAll() {
-        return ResponseEntity.ok(service.getAll().stream().map(mapper::fromResponse).collect(Collectors.toList()));
+    public ResponseEntity<Page<SchedulingResponse>> getAll(@PageableDefault(sort = "id", direction = Sort.Direction.DESC, page = 0, size = 10) Pageable pageable) {
+        return ResponseEntity.ok(service.getAll(pageable).map(mapper::fromResponse));
     }
 
     @Override
@@ -53,5 +55,11 @@ public class SchedulingController implements SchedulingApi {
                         }
 
                 ).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @Override
+    public void delete(Long id) {
+        service.delete(id);
+        ResponseEntity.status(HttpStatus.OK).build();
     }
 }
